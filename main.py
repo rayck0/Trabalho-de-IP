@@ -391,10 +391,10 @@ class Jogo:
         desenhar_botao_pixelado("INICIAR", 480, acao_iniciar)
         desenhar_botao_pixelado("SAIR", 560, acao_sair)
 
-        instrucao_sombra = FONTE_UI.render("Use WASD para mover | MOUSE mira", True, (0,0,0))
+        instrucao_sombra = FONTE_UI.render("Use WASD para mover", True, (0,0,0))
         self.Tela.blit(instrucao_sombra, (LARGURA_TELA//2 - instrucao_sombra.get_width()//2 + 2, ALTURA_TELA - 90))
         
-        instrucao = FONTE_UI.render("Use WASD para mover | MOUSE mira", True, (255, 0, 0))
+        instrucao = FONTE_UI.render("Use WASD para mover", True, (255, 0, 0))
         self.Tela.blit(instrucao, (LARGURA_TELA//2 - instrucao.get_width()//2, ALTURA_TELA - 90))
 
     def desenhar_game_over(self):
