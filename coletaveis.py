@@ -16,6 +16,7 @@ class Coletavel(pygame.sprite.Sprite):
         self.tipo = tipo
         self.sprites = []
         
+        # CONFIGURAÇÃO DE TAMANHO
         # Aumenta o tamanho original em 3 vezes (Mude para 2 ou 4 se quiser)
         ESCALA = 3 
         
@@ -30,7 +31,7 @@ class Coletavel(pygame.sprite.Sprite):
         largura_sheet = sheet.get_width()
         altura_sheet = sheet.get_height()
         
-        # corte + aumento
+        # CORTE + AUMENTO (SCALE)
         if largura_sheet > altura_sheet: # Horizontal
             largura_frame = largura_sheet // frames_total
             altura_frame = altura_sheet

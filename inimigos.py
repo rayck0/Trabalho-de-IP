@@ -30,7 +30,7 @@ class InimigoPadrao(pygame.sprite.Sprite):
         self.pos_real = pygame.math.Vector2(self.rect.topleft)
         self.velocidade = velocidade
         self.vida = vida
-        self.vida_maxima = vida # Útil se quisermos desenhar barra de vida dps
+        self.vida_maxima = vida # Útil se quisermos desenhar barra de vida depois
         
         # Controle do Pisca-Pisca flash do dano
         self.hit_timer = 0 
@@ -60,7 +60,7 @@ class InimigoPadrao(pygame.sprite.Sprite):
         # Pega a imagem original do frame atual
         imagem_atual = self.sprites[int(self.index)]
         
-        # Efeito de Dano de piscar
+        # Efeito de Dano (Piscar Branco)
         if self.hit_timer > 0:
             self.hit_timer -= 1
             # Cria uma cópia para não estragar a original

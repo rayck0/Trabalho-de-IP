@@ -34,7 +34,7 @@ class Jogo:
         self.Relogio = pygame.time.Clock()
         
         # ESTADOS E CONFIGURAÇÕES
-        self.estado = "JOGANDO" 
+        self.estado = "MENU" 
         self.opcoes_upgrade = [] 
         self.config_som = True     
         self.config_dano = True    
@@ -54,9 +54,13 @@ class Jogo:
         self.sons = {}
         self.carregar_sons_do_usuario()
         
+        # Tela menu
+        img_original = pygame.image.load('Sprites/Menu.png')
+        self.imagem_capa = pygame.transform.scale(img_original, (LARGURA_TELA, ALTURA_TELA))
+        
         # Setup Inicial
         self.setup_do_mundo()
-        self.tocar_musica()
+        self.tocar_musica_menu()
 
     def carregar_sons_do_usuario(self):
         diretorio_sons = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Sons')
@@ -76,14 +80,20 @@ class Jogo:
         self.sons["explosao"] = carregar("explosion.wav")
         self.sons["levelup"] = carregar("powerUp.wav")
         self.sons["moeda"] = carregar("pickupCoin.wav")
-        self.sons["musica"] = carregar("byte-blast-8-bit-arcade-music-background-music-for-video-208780.mp3", tipo="musica")
+        self.sons["musica-menu"] = carregar("Menu-musica.mp3", tipo="musica")
+        self.sons["musica-principal"] = carregar('Neon Circuitry.mp3', tipo='musica')
 
     def tocar_som(self, nome):
         if self.config_som and self.sons.get(nome):
             self.sons[nome].play()
 
-    def tocar_musica(self):
-        if self.config_som and self.sons.get("musica"):
+    def tocar_musica_menu(self):
+        if self.config_som and self.sons.get("musica-menu"):
+            pygame.mixer.music.set_volume(0.3)
+            pygame.mixer.music.play(-1)
+    
+    def tocar_musica_principal(self):
+        if self.config_som and self.sons.get("musica-principal"):
             pygame.mixer.music.set_volume(0.3)
             pygame.mixer.music.play(-1)
 
@@ -109,7 +119,7 @@ class Jogo:
         # Recria o mundo
         self.setup_do_mundo()
         self.estado = "JOGANDO"
-        self.tocar_musica() # Volta a música
+        self.tocar_musica_principal() # Volta a música
 
     def spawnar_inimigo(self):
         angulo = random.uniform(0, 360)
@@ -259,6 +269,84 @@ class Jogo:
             if rect_dano.collidepoint(mouse_pos):
                 self.config_dano = not self.config_dano
                 pygame.time.delay(200)
+    
+    # TELA DE MENU
+    def desenhar_menu_inicial(self):
+        # 1. Wallpaper e Fundo
+        if self.imagem_capa:
+            self.Tela.blit(self.imagem_capa, (0, 0))
+        
+        # Overlay escuro
+        overlay = pygame.Surface((LARGURA_TELA, ALTURA_TELA))
+        overlay.set_alpha(80) 
+        overlay.fill((0, 0, 0))
+        self.Tela.blit(overlay, (0, 0))
+
+        # --- FUNÇÃO AUXILIAR PARA DESENHAR BOTÕES PIXELADOS ---
+        # Isso evita repetir código. Passamos o Texto, a Posição Y e a Função que roda ao clicar
+        def desenhar_botao_pixelado(texto, y_pos, funcao_ao_clicar):
+            mouse_pos = pygame.mouse.get_pos()
+            clique = pygame.mouse.get_pressed()[0]
+            
+            # Geometria do botão
+            rect = pygame.Rect(LARGURA_TELA//2 - 100, y_pos, 200, 60)
+            p = 6 # Tamanho do corte (pixelado)
+            
+            pontos = [
+                (rect.left, rect.top + p), (rect.left + p, rect.top),
+                (rect.right - p, rect.top), (rect.right, rect.top + p),
+                (rect.right, rect.bottom - p), (rect.right - p, rect.bottom),
+                (rect.left + p, rect.bottom), (rect.left, rect.bottom - p)
+            ]
+
+            # Cores padrão
+            cor_borda = (255, 0, 0) # Vermelho
+            cor_texto = (255, 0, 0)
+            preenchimento = None
+
+            # Interação Mouse
+            if rect.collidepoint(mouse_pos):
+                preenchimento = cor_borda
+                cor_texto = (255, 255, 255) # Branco
+                
+                # Sombra deslocada ao passar o mouse
+                pontos_sombra = [(x+4, y+4) for x, y in pontos]
+                pygame.draw.polygon(self.Tela, (50, 0, 0), pontos_sombra)
+                
+                if clique:
+                    funcao_ao_clicar() # Executa a ação do botão
+            
+            # Desenha
+            if preenchimento:
+                pygame.draw.polygon(self.Tela, preenchimento, pontos)
+            pygame.draw.polygon(self.Tela, cor_borda, pontos, 4)
+            
+            surf_texto = FONTE_BOTAO.render(texto, True, cor_texto)
+            self.Tela.blit(surf_texto, (rect.centerx - surf_texto.get_width()//2, rect.centery - surf_texto.get_height()//2))
+
+        # --- 3. DEFININDO AS AÇÕES DOS BOTÕES ---
+        
+        def acao_iniciar():
+            self.estado = "JOGANDO"
+            self.reiniciar_jogo()
+
+        def acao_sair():
+            pygame.quit()
+            sys.exit()
+
+        # --- 4. DESENHANDO OS BOTÕES ---
+        # Botão Iniciar (Subi para 480 para dar espaço)
+        desenhar_botao_pixelado("INICIAR", 480, acao_iniciar)
+        
+        # Botão Sair (Logo abaixo, no 560)
+        desenhar_botao_pixelado("SAIR", 560, acao_sair)
+
+        # 5. Instruções
+        instrucao_sombra = FONTE_UI.render("Use WASD para mover", True, (0,0,0))
+        self.Tela.blit(instrucao_sombra, (LARGURA_TELA//2 - instrucao_sombra.get_width()//2 + 2, ALTURA_TELA - 90))
+        
+        instrucao = FONTE_UI.render("Use WASD para mover", True, (255, 0, 0))
+        self.Tela.blit(instrucao, (LARGURA_TELA//2 - instrucao.get_width()//2, ALTURA_TELA - 90))
 
     # TELA DE GAME OVER
     def desenhar_game_over(self):
@@ -337,7 +425,10 @@ class Jogo:
 
             self.Tela.fill(COR_PRETA)
             
-            if self.estado == "JOGANDO":
+            if self.estado == "MENU":
+                self.desenhar_menu_inicial()
+                
+            elif self.estado == "JOGANDO":
                 self.CameraGroup.update()
                 self.logica_tiro_automatico()
                 for inimigo in self.GrupoInimigos:
