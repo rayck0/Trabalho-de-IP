@@ -58,10 +58,26 @@ class Jogo:
         img_original = pygame.image.load('Sprites/Menu.png')
         self.imagem_capa = pygame.transform.scale(img_original, (LARGURA_TELA, ALTURA_TELA))
         
+        # --- CARREGAMENTO DAS CARTAS ---
+        self.imagens_cards = {}
+        try:
+            dim = (200, 300)
+            self.imagens_cards["dano"]     = pygame.transform.scale(pygame.image.load("Sprites/card_dano.png"), dim)
+            self.imagens_cards["cooldown"] = pygame.transform.scale(pygame.image.load("Sprites/card_cooldown.png"), dim)
+            self.imagens_cards["speed"]    = pygame.transform.scale(pygame.image.load("Sprites/card_speed.png"), dim)
+            self.imagens_cards["cura"]     = pygame.transform.scale(pygame.image.load("Sprites/card_cura.png"), dim)
+            self.imagens_cards["vida_max"] = pygame.transform.scale(pygame.image.load("Sprites/card_tank.png"), dim)
+        except Exception as e:
+            print(f"AVISO: Alguma carta não foi encontrada! {e}")
+        # -------------------------------------
+
         # Setup Inicial
         self.setup_do_mundo()
+        
+        # --- CORREÇÃO AQUI ---
+        # Antes estava self.tocar_musica("musica-menu"), que não existe.
+        # Mudamos para chamar a função direta:
         self.tocar_musica_menu()
-
     def carregar_sons_do_usuario(self):
         diretorio_sons = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Sons')
         def carregar(nome, tipo="efeito"):
@@ -98,12 +114,19 @@ class Jogo:
             pygame.mixer.music.play(-1)
 
     def atualizar_volume_musica(self):
-        if self.sons.get("musica"):
-            if self.config_som:
-                pygame.mixer.music.set_volume(0.3)
-                if not pygame.mixer.music.get_busy(): pygame.mixer.music.play(-1)
-            else:
-                pygame.mixer.music.set_volume(0)
+        # Verifica se o som está ligado ou desligado
+        if self.config_som:
+            pygame.mixer.music.set_volume(0.3)
+            # Se a música estava pausada, despausa
+            if not pygame.mixer.music.get_busy():
+                # Tenta tocar a música apropriada para o estado atual
+                if self.estado == "MENU":
+                    self.tocar_musica_menu()
+                else:
+                    self.tocar_musica_principal()
+        else:
+            # Se desligou o som, zera o volume
+            pygame.mixer.music.set_volume(0)
 
     def setup_do_mundo(self):
         self.Jogador = Jogador((1500, 1500), [self.CameraGroup])
@@ -193,39 +216,73 @@ class Jogo:
         pygame.draw.rect(self.Tela, COR_UI_BORDA, bg_xp, 1)
 
     def desenhar_menu_levelup(self):
+        # 1. Fundo escuro (Overlay)
         overlay = pygame.Surface((LARGURA_TELA, ALTURA_TELA))
         overlay.set_alpha(150); overlay.fill((0,0,0))
         self.Tela.blit(overlay, (0,0))
         
+        # 2. Título
         titulo = FONTE_TITULO.render("LEVEL UP! Escolha:", True, (255, 215, 0))
-        self.Tela.blit(titulo, (LARGURA_TELA//2 - titulo.get_width()//2, 100))
+        self.Tela.blit(titulo, (LARGURA_TELA//2 - titulo.get_width()//2, 80))
         
         mouse_pos = pygame.mouse.get_pos()
         clique = pygame.mouse.get_pressed()[0]
         
-        largura_carta = 200; altura_carta = 300; espaco = 50
-        total_w = 3*largura_carta + 2*espaco
-        inicio_x = (LARGURA_TELA - total_w) // 2
-        y_carta = 200
+        # 3. Configuração de Layout
+        largura_carta = 200 
+        altura_carta = 300
+        espaco = 50
         
+        # Centraliza o conjunto de 3 cartas
+        total_w = 3 * largura_carta + 2 * espaco
+        inicio_x = (LARGURA_TELA - total_w) // 2
+        y_carta = 180
+        
+        # 4. Loop pelas opções (A Mágica acontece aqui)
         for i, opcao in enumerate(self.opcoes_upgrade):
-            x_carta = inicio_x + i * (largura_carta + espaco)
-            rect_carta = pygame.Rect(x_carta, y_carta, largura_carta, altura_carta)
+            # A PONTE: Pega a imagem certa baseada no "tipo" da opção (dano, speed, etc)
+            tipo = opcao["tipo"]
+            imagem_carta = self.imagens_cards.get(tipo)
             
-            cor_atual = opcao["cor"]
-            if rect_carta.collidepoint(mouse_pos):
-                cor_atual = (min(cor_atual[0]+30, 255), min(cor_atual[1]+30, 255), min(cor_atual[2]+30, 255))
+            # Calcula onde desenhar essa carta específica
+            x = inicio_x + i * (largura_carta + espaco)
+            rect = pygame.Rect(x, y_carta, largura_carta, altura_carta)
+            
+            # --- INTERAÇÃO (Mouse em cima) ---
+            if rect.collidepoint(mouse_pos):
+                # Efeito Zoom: Aumenta a carta em 20 pixels
+                largura_zoom = largura_carta + 20
+                altura_zoom = altura_carta + 30
+                
+                # Ajusta X e Y para o zoom crescer para todos os lados (centralizado)
+                diff_x = (largura_zoom - largura_carta) // 2
+                diff_y = (altura_zoom - altura_carta) // 2
+                
+                # Desenha a imagem maior (Zoom)
+                if imagem_carta:
+                    img_zoom = pygame.transform.scale(imagem_carta, (largura_zoom, altura_zoom))
+                    self.Tela.blit(img_zoom, (x - diff_x, y_carta - diff_y))
+                else:
+                    # Fallback (quadrado colorido se não tiver imagem)
+                    pygame.draw.rect(self.Tela, opcao["cor"], (x - diff_x, y_carta - diff_y, largura_zoom, altura_zoom), border_radius=15)
+
+                # Borda Branca de Seleção
+                pygame.draw.rect(self.Tela, (255, 255, 255), (x - diff_x, y_carta - diff_y, largura_zoom, altura_zoom), 4, border_radius=15)
+                
+                # CLIQUE: Aplica o upgrade
                 if clique:
                     self.aplicar_upgrade(opcao)
                     return 
             
-            pygame.draw.rect(self.Tela, cor_atual, rect_carta, border_radius=15)
-            pygame.draw.rect(self.Tela, COR_BRANCA, rect_carta, 3, border_radius=15)
-            
-            nome = FONTE_TITULO.render(opcao["nome"], True, COR_BRANCA)
-            desc = FONTE_CARTA.render(opcao["desc"], True, COR_BRANCA)
-            self.Tela.blit(nome, (rect_carta.centerx - nome.get_width()//2, rect_carta.y + 40))
-            self.Tela.blit(desc, (rect_carta.centerx - desc.get_width()//2, rect_carta.centery))
+            else:
+                # --- DESENHO NORMAL (Sem mouse) ---
+                if imagem_carta:
+                    self.Tela.blit(imagem_carta, (x, y_carta))
+                else:
+                    # Fallback (Desenho antigo com texto)
+                    pygame.draw.rect(self.Tela, opcao["cor"], rect, border_radius=15)
+                    nome = FONTE_TITULO.render(opcao["nome"], True, COR_BRANCA)
+                    self.Tela.blit(nome, (rect.centerx - nome.get_width()//2, rect.y + 40))
 
     def desenhar_menu_pause(self):
         overlay = pygame.Surface((LARGURA_TELA, ALTURA_TELA))
