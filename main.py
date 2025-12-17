@@ -30,6 +30,8 @@ from coletaveis import *
 
 class Jogo:
     def __init__(self):
+        icone_img = pygame.image.load('Sprites/video-game.png') 
+        pygame.display.set_icon(icone_img)
         self.Tela = pygame.display.get_surface()
         self.Relogio = pygame.time.Clock()
         
