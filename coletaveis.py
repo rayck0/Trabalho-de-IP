@@ -1,70 +1,71 @@
 import pygame
 import math
+import os
+from config import *
 
-# Não precisamos de os/sys/math aqui, pois não estamos mais usando recurso_caminho
-# math será necessário se você quiser a lógica de flutuação, 
-# mas não está sendo usada no update() atual.
+DIRETORIO = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Sprites')
 
-class Coletaveis(pygame.sprite.Sprite):
-    def __init__(self, tipo, x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.sprites = []
-        tamanho_item = (35, 35)
-        
-        # --- Carregamento de quadros para XP e Moeda (agora corrigido) ---
-        if tipo == 'xp':
-            for ii in range(2,5):
-                # CORREÇÃO: Carrega a imagem diretamente com o caminho relativo (usando '/')
-                caminho_img = f'recursos/xp_{ii}-removebg-preview.png' 
-                img = pygame.image.load(caminho_img).convert_alpha()
-                self.sprites.append(pygame.transform.scale(img, tamanho_item))
-                
-        elif tipo =='moeda':
-            for ii in range(1,5):
-                # CORREÇÃO: Carregamento direto
-                caminho_img = f'recursos/moeda_{ii}-removebg-preview.png'
-                img = pygame.image.load(caminho_img).convert_alpha()
-                self.sprites.append(pygame.transform.scale(img, tamanho_item))
-                
-        elif tipo == 'vida':
-            # CORREÇÃO: Carregamento direto
-            caminho_img = 'recursos/coracao-removebg-preview.png'
-            img = pygame.image.load(caminho_img).convert_alpha()
-            self.sprites.append(pygame.transform.scale(img, tamanho_item))
-        
-        # Variáveis de Animação
-        self.indice_atual = 0.0 # Usamos float para controle de velocidade
-        self.velocidade_animacao = 0.2
-        self.image = self.sprites[0] if self.sprites else pygame.Surface(tamanho_item)
-        
-        self.rect = self.image.get_rect()
-        self.rect.x=x
-        self.rect.y=y
+# Carrega as imagens
+img_vida = pygame.image.load(os.path.join(DIRETORIO, 'Coletavel_vida.png')).convert_alpha()
+img_xp = pygame.image.load(os.path.join(DIRETORIO, 'Coletavel_experiencia.png')).convert_alpha()
+img_moeda = pygame.image.load(os.path.join(DIRETORIO, 'Coletavel_moeda.png')).convert_alpha()
+
+class Coletavel(pygame.sprite.Sprite):
+    def __init__(self, tipo, pos, grupos):
+        super().__init__(grupos)
         self.tipo = tipo
+        self.sprites = []
         
-        # Variáveis de Flutuação
-        self.posicao_y_inicial = y         
-        self.flutuacao_amplitude = 5  
-        self.flutuacao_velocidade = 0.05   
-        self.angulo_atual = 0
-    
-    def update(self):
-        # Lógica de Animação de Quadros: só troca se houver mais de um quadro
-        if len(self.sprites) > 1:
-            self.indice_atual += self.velocidade_animacao
+        # Aumenta o tamanho original em 3 vezes (Mude para 2 ou 4 se quiser)
+        ESCALA = 3 
+        
+        if self.tipo == 'vida':
+            sheet = img_vida; frames_total = 4
+        elif self.tipo == 'xp':
+            sheet = img_xp; frames_total = 4
+        else:
+            sheet = img_moeda; frames_total = 4
             
-            # Se o índice passar do número de quadros, ele volta para o início (loop)
-            if self.indice_atual >= len(self.sprites):
-                self.indice_atual = 0.0
+        # Descobre tamanho original
+        largura_sheet = sheet.get_width()
+        altura_sheet = sheet.get_height()
+        
+        # corte + aumento
+        if largura_sheet > altura_sheet: # Horizontal
+            largura_frame = largura_sheet // frames_total
+            altura_frame = altura_sheet
+            for x in range(frames_total):
+                # Corta o pedacinho pequeno
+                corte = sheet.subsurface((x * largura_frame, 0), (largura_frame, altura_frame))
+                # Aumenta ele
+                novo_tamanho = (largura_frame * ESCALA, altura_frame * ESCALA)
+                img_grande = pygame.transform.scale(corte, novo_tamanho)
+                self.sprites.append(img_grande)
                 
-            # Atualiza a imagem com o quadro atual (convertendo para inteiro)
-            self.image = self.sprites[int(self.indice_atual)]
+        else: # Vertical
+            largura_frame = largura_sheet
+            altura_frame = altura_sheet // frames_total
+            for y in range(frames_total):
+                corte = sheet.subsurface((0, y * altura_frame), (largura_frame, altura_frame))
+                # Aumenta ele
+                novo_tamanho = (largura_frame * ESCALA, altura_frame * ESCALA)
+                img_grande = pygame.transform.scale(corte, novo_tamanho)
+                self.sprites.append(img_grande)
+
+        if not self.sprites: self.sprites.append(sheet)
+
+        self.index = 0
+        self.image = self.sprites[self.index]
+        self.rect = self.image.get_rect(center=pos)
+        self.y_original = self.rect.centery
+        self.timer_animacao = 0
+
+    def update(self):
+        # Animação
+        self.index += 0.15
+        if self.index >= len(self.sprites): self.index = 0
+        self.image = self.sprites[int(self.index)]
         
-        # Lógica de Flutuação (esta parte também está OK)
-        self.angulo_atual += self.flutuacao_velocidade
-        offset_y = math.sin(self.angulo_atual) * self.flutuacao_amplitude
-        self.rect.y = self.posicao_y_inicial + offset_y
-        
-        center = self.rect.center
-        # CORREÇÃO 3: Ajustando o rect após a troca de imagem e flutuação
-        self.rect = self.image.get_rect(center=center)
+        # Flutuar
+        self.timer_animacao += 0.1
+        self.rect.centery = self.y_original + math.sin(self.timer_animacao) * 5
