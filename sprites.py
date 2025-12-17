@@ -22,17 +22,16 @@ except:
 try:
     path_mapa = os.path.join(DIRETORIO, 'mapajogoip.jpg')
     img_tile = pygame.image.load(path_mapa).convert()
-    imagem_fundo = pygame.Surface((3000, 3000))
+    imagem_fundo = pygame.Surface((LARGURA_MUNDO, ALTURA_MUNDO))
     tile_w = img_tile.get_width()
     tile_h = img_tile.get_height()
     # Preenche o chão vulgo Tiling
-    for x in range(0, 3000, tile_w):
-        for y in range(0, 3000, tile_h):
+    for x in range(0, LARGURA_MUNDO, tile_w):
+        for y in range(0, ALTURA_MUNDO, tile_h):
             imagem_fundo.blit(img_tile, (x, y))
 except:
     print("ERRO: Mapa não encontrado")
-    imagem_fundo = pygame.Surface((3000, 3000)); imagem_fundo.fill((30, 30, 30))
-
+    imagem_fundo = pygame.Surface((LARGURA_MUNDO, ALTURA_MUNDO)); imagem_fundo.fill((30, 30, 30))
 # CLASSES
 
 class GrupoCamera(pygame.sprite.Group):
@@ -47,6 +46,15 @@ class GrupoCamera(pygame.sprite.Group):
     def custom_draw(self, player):
         self.Offset.x = player.rect.centerx - self.HalfWidth
         self.Offset.y = player.rect.centery - self.HalfHeight
+
+        #limitar camera no limite do mapa
+        if self.Offset.x < 0: self.Offset.x = 0
+        if self.Offset.y < 0: self.Offset.y = 0
+        
+        if self.Offset.x > LARGURA_MUNDO - LARGURA_TELA:
+            self.Offset.x = LARGURA_MUNDO - LARGURA_TELA
+        if self.Offset.y > ALTURA_MUNDO - ALTURA_TELA:
+            self.Offset.y = ALTURA_MUNDO - ALTURA_TELA
 
         # Chão
         pos_chao = self.chao_rect.topleft - self.Offset

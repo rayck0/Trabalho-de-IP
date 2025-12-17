@@ -5,7 +5,11 @@ import pygame
 LARGURA_TELA = 1280
 ALTURA_TELA = 720
 FPS = 60
-TAMANHO_TILE = 64 
+TAMANHO_TILE = 64
+
+#define tamanho do mapa
+LARGURA_MUNDO = 3000
+ALTURA_MUNDO = 3000
 
 # CORES (RGB) 
 COR_PRETA = (0, 0, 0)
