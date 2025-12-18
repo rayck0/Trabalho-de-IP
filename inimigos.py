@@ -71,7 +71,7 @@ class InimigoPadrao(pygame.sprite.Sprite):
         return False 
 
     def update(self):
-        self.index += 0.15
+        self.index += 0.10
         
         sprites_atuais = self.sprites_direita if self.olhando_direita else self.sprites_esquerda
         
@@ -106,8 +106,8 @@ class RoboZangao(InimigoPadrao):
 
 class RoboCobra(InimigoPadrao): 
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_cobra, 5, 64, 64, 256, velocidade=1.5, vida=150)
+        super().__init__(pos, grupos, sheet_cobra, 5, 64, 64, 256, velocidade=1.8, vida=200)
 
 class RoboDragao(InimigoPadrao): 
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_dragao, 6, 256, 256, 570, velocidade=1.0, vida=500)
+        super().__init__(pos, grupos, sheet_dragao, 6, 256, 256, 570, velocidade=1.5, vida=500)

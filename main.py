@@ -162,7 +162,7 @@ class Jogo:
         if sorteio <= 40: RoboVoador(pos_final, grupos) #40%
         elif sorteio <= 70: RoboBola(pos_final, grupos) #30%
         elif sorteio <= 90: RoboZangao(pos_final, grupos) #20%
-        elif sorteio <= 98: RoboCobra(pos_final, grupos) #8%
+        elif sorteio <= 99: RoboCobra(pos_final, grupos) #9%
         else: RoboDragao(pos_final, grupos) #2%
 
     def logica_tiro_automatico(self):
@@ -183,7 +183,7 @@ class Jogo:
 
     def gerar_opcoes_upgrade(self):
         catalogo = [
-            {"nome": "Forca Bruta", "desc": "+10 Dano", "tipo": "dano", "valor": 10, "cor": (200, 50, 50)},
+            {"nome": "Forca Bruta", "desc": "+5 Dano", "tipo": "dano", "valor": 5, "cor": (200, 50, 50)},
             {"nome": "Metralhadora", "desc": "-10% Tempo Tiro", "tipo": "cooldown", "valor": 0.9, "cor": (50, 200, 200)},
             {"nome": "Pe de Vento", "desc": "+1 Velocidade", "tipo": "speed", "valor": 1, "cor": (50, 200, 50)},
             {"nome": "Curativo", "desc": "Cura 50 Vida", "tipo": "cura", "valor": 50, "cor": (200, 100, 200)},
