@@ -74,5 +74,3 @@ Durante o desenvolvimento, enfrentamos desafios como:
 1.  **Lógica da Câmera:** Fazer o cenário se mover na direção oposta ao jogador para criar o efeito de câmera fixa no centro.
 2.  **Animação de Sprites:** Sincronizar a taxa de quadros da animação e resolver o problema dos inimigos que andavam "de costas" (resolvido com `pygame.transform.flip`).
 3.  **Gerenciamento de Estados:** Criar um fluxo robusto para que o jogo não continuasse rodando "por trás" do menu de Pause ou Level Up.
-
-*Projeto desenvolvido para a disciplina de Introdução à Programação (CIn - UFPE).*
