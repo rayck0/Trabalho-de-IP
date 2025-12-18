@@ -22,7 +22,7 @@ O jogo utiliza mecânicas de **geração procedural de inimigos**, **sistema de 
 Este projeto foi fundamental para aplicar os conceitos de **Programação Orientada a Objetos (POO)**.
 
 | Conceito | Aplicação no Projeto |
-
+|----------|----------------------|
 | **Herança** | A classe `InimigoPadrao` define a lógica base, e `RoboVoador`, `RoboDragao`, etc., herdam e modificam seus atributos. |
 | **Polimorfismo** | Todos os inimigos têm o método `update()`, mas comportam-se de maneira diferente (velocidade, sprites). |
 | **Encapsulamento** | Separação do código em módulos (`main.py`, `sprites.py`, etc.) para facilitar a manutenção. |
@@ -63,6 +63,7 @@ O projeto foi dividido em módulos para manter o código limpo:
 ## 🕹️ Controles
 
 | Tecla | Ação |
+|-------|------|
 | **W, A, S, D** ou **Setas** | Movimentar o Personagem |
 | **ESC** | Pausar o Jogo / Voltar ao Jogo |
 | **Mouse (Clique)** | Selecionar Cartas de Upgrade / Botões do Menu |
