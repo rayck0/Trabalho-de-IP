@@ -41,6 +41,9 @@ class Jogo:
         self.config_som = True     
         self.config_dano = True    
         
+        # CRONÔMETRO
+        self.tempo_sobrevivencia = 0 # Em milissegundos
+
         # Grupos
         self.CameraGroup = GrupoCamera()
         self.GrupoInimigos = pygame.sprite.Group() 
@@ -60,7 +63,7 @@ class Jogo:
         img_original = pygame.image.load('Sprites/Menu.png')
         self.imagem_capa = pygame.transform.scale(img_original, (LARGURA_TELA, ALTURA_TELA))
         
-        # --- CARREGAMENTO DAS CARTAS ---
+        # CARREGAMENTO DAS CARTAS
         self.imagens_cards = {}
         try:
             dim = (200, 300)
@@ -71,7 +74,7 @@ class Jogo:
             self.imagens_cards["vida_max"] = pygame.transform.scale(pygame.image.load("Sprites/card_tank.png"), dim)
         except Exception as e:
             print(f"AVISO: Alguma carta não foi encontrada! {e}")
-        # -------------------------------------
+        #-
 
         # Setup Inicial
         self.setup_do_mundo()
@@ -131,7 +134,7 @@ class Jogo:
 
     def setup_do_mundo(self):
         self.Jogador = Jogador((1500, 1500), [self.CameraGroup])
-        # INICIA AS MOEDAS (CORREÇÃO DO ERRO)
+        # INICIA AS MOEDAS
         self.Jogador.moedas = 0
 
     def reiniciar_jogo(self):
@@ -141,6 +144,8 @@ class Jogo:
         self.GrupoItens.empty()
         self.CameraGroup.empty() # Limpa sprites visuais antigos
         
+        self.tempo_sobrevivencia = 0 # ZERA O TEMPO
+
         # Recria o mundo
         self.setup_do_mundo()
         self.estado = "JOGANDO"
@@ -199,7 +204,7 @@ class Jogo:
     def desenhar_ui(self):
         x = 20; y = 40
         
-        # --- BARRA DE VIDA ---
+        # BARRA DE VIDA
         bg_rect = pygame.Rect(x, y, BARRA_VIDA_LARGURA, BARRA_VIDA_ALTURA)
         pygame.draw.rect(self.Tela, COR_UI_FUNDO, bg_rect)
         razao_vida = max(0, self.Jogador.vida_atual / self.Jogador.vida_maxima)
@@ -212,7 +217,7 @@ class Jogo:
         surf_vida = FONTE_UI.render(texto_vida, True, COR_BRANCA)
         self.Tela.blit(surf_vida, (x + 10, y + 2))
         
-        # --- BARRA DE XP ---
+        # BARRA DE XP
         y_xp = y - 20 # Subi um pouquinho
         bg_xp = pygame.Rect(x, y_xp, BARRA_VIDA_LARGURA, 15) # Altura 15
         pygame.draw.rect(self.Tela, (30, 30, 30), bg_xp)
@@ -230,7 +235,7 @@ class Jogo:
         surf_xp = fonte_xp.render(texto_xp, True, COR_BRANCA)
         self.Tela.blit(surf_xp, (bg_xp.centerx - surf_xp.get_width()//2, bg_xp.y))
 
-        # --- CONTADOR DE MOEDAS (NOVO) ---
+        # CONTADOR DE MOEDAS
         COR_OURO = (255, 215, 0) 
         texto_moedas = f"Moedas: {self.Jogador.moedas}"
         surf_moedas = FONTE_UI.render(texto_moedas, True, COR_OURO)
@@ -239,20 +244,31 @@ class Jogo:
         pos_y_moeda = y + 5
         self.Tela.blit(surf_moedas, (pos_x_moeda, pos_y_moeda))
 
+        # TIMER (CRONÔMETRO)
+        segundos_totais = int(self.tempo_sobrevivencia / 1000)
+        minutos = segundos_totais // 60
+        segundos = segundos_totais % 60
+        texto_timer = f"{minutos:02}:{segundos:02}"
+        
+        surf_timer = FONTE_TITULO.render(texto_timer, True, COR_BRANCA)
+        # Centraliza no topo
+        self.Tela.blit(surf_timer, (LARGURA_TELA//2 - surf_timer.get_width()//2, 20))
+
+
     def desenhar_menu_levelup(self):
-        # 1. Fundo escuro
+        # Fundo escuro
         overlay = pygame.Surface((LARGURA_TELA, ALTURA_TELA))
         overlay.set_alpha(150); overlay.fill((0,0,0))
         self.Tela.blit(overlay, (0,0))
         
-        # 2. Título
+        # Título
         titulo = FONTE_TITULO.render("LEVEL UP! Escolha:", True, (255, 215, 0))
         self.Tela.blit(titulo, (LARGURA_TELA//2 - titulo.get_width()//2, 80))
         
         mouse_pos = pygame.mouse.get_pos()
         clique = pygame.mouse.get_pressed()[0]
         
-        # 3. Layout
+        # Layout
         largura_carta = 200 
         altura_carta = 300
         espaco = 50
@@ -261,7 +277,7 @@ class Jogo:
         inicio_x = (LARGURA_TELA - total_w) // 2
         y_carta = 180
         
-        # 4. Loop
+        # Loop
         for i, opcao in enumerate(self.opcoes_upgrade):
             tipo = opcao["tipo"]
             imagem_carta = self.imagens_cards.get(tipo)
@@ -409,8 +425,13 @@ class Jogo:
         txt_reiniciar = FONTE_TITULO.render("Pressione 'R' para Reiniciar", True, COR_BRANCA)
         txt_score = FONTE_BOTAO.render(f"MOEDAS COLETADAS: {self.Jogador.moedas}", True, COR_DOURADA)
 
-        self.Tela.blit(txt_gameover, (LARGURA_TELA//2 - txt_gameover.get_width()//2, 200))
-        self.Tela.blit(txt_score, (LARGURA_TELA//2 - txt_score.get_width()//2, 350))
+        # MOSTRA TEMPO NO GAME OVER
+        segundos_totais = int(self.tempo_sobrevivencia / 1000)
+        txt_tempo = FONTE_BOTAO.render(f"TEMPO: {segundos_totais // 60:02}:{segundos_totais % 60:02}", True, COR_BRANCA)
+
+        self.Tela.blit(txt_gameover, (LARGURA_TELA//2 - txt_gameover.get_width()//2, 150))
+        self.Tela.blit(txt_score, (LARGURA_TELA//2 - txt_score.get_width()//2, 300))
+        self.Tela.blit(txt_tempo, (LARGURA_TELA//2 - txt_tempo.get_width()//2, 350)) # Tempo em baixo das moedas
         self.Tela.blit(txt_reiniciar, (LARGURA_TELA//2 - txt_reiniciar.get_width()//2, 500))
 
     def checar_colisoes(self):
@@ -480,6 +501,10 @@ class Jogo:
                 self.desenhar_menu_inicial()
                 
             elif self.estado == "JOGANDO":
+                #  ATUALIZA O TIMER
+                dt = self.Relogio.get_time() # Tempo desde o último frame
+                self.tempo_sobrevivencia += dt
+
                 self.CameraGroup.update()
                 self.logica_tiro_automatico()
                 for inimigo in self.GrupoInimigos:
