@@ -27,6 +27,6 @@ COR_UI_FUNDO = (50, 50, 50) # Cinza escuro
 COR_VIDA = COR_VERMELHA
 
 # Dano que o jogador leva ao encostar no inimigo
-DANO_INIMIGO = 10 
+DANO_INIMIGO = 10
 # Tempo que fica invencível (em milissegundos)
 TEMPO_INVENCIVEL = 500

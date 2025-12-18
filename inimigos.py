@@ -79,18 +79,18 @@ class RoboVoador(InimigoPadrao): # Morre em 3 tiros
     def __init__(self, pos, grupos):
         super().__init__(pos, grupos, sheet_voador, 8, 88, 64, 64, velocidade=3.0, vida=30)
 
-class RoboBola(InimigoPadrao): # Morre em 5 tiros
+class RoboBola(InimigoPadrao): # Morre em 4 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_bola, 4, 64, 64, 64, velocidade=2.5, vida=50)
+        super().__init__(pos, grupos, sheet_bola, 4, 64, 64, 64, velocidade=2.5, vida=40)
 
-class RoboZangao(InimigoPadrao): # Morre em 7 tiros
+class RoboZangao(InimigoPadrao): # Morre em 6 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_zangao, 4, 64, 64, 64, velocidade=2.0, vida=70)
+        super().__init__(pos, grupos, sheet_zangao, 4, 64, 64, 64, velocidade=2.0, vida=60)
 
-class RoboCobra(InimigoPadrao): #MINI BOSS: Morre em 18 tiros
+class RoboCobra(InimigoPadrao): #MINI BOSS: Morre em 15 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_cobra, 5, 64, 64, 128, velocidade=1.5, vida=180)
+        super().__init__(pos, grupos, sheet_cobra, 5, 64, 64, 256, velocidade=1.5, vida=150)
 
 class RoboDragao(InimigoPadrao): # BOSS: Morre em 50 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_dragao, 6, 256, 256, 380, velocidade=1.0, vida=500)
+        super().__init__(pos, grupos, sheet_dragao, 6, 256, 256, 570, velocidade=1.0, vida=500)

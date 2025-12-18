@@ -8,15 +8,15 @@ from config import *
 pygame.init()
 pygame.mixer.init()
 pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-pygame.display.set_caption("Vampire Survivors - Projeto Final")
+pygame.display.set_caption("Byte Survivors - Projeto Final")
 
 # Fontes
 try:
-    FONTE_UI = pygame.font.SysFont("arial", 18, bold=True)
-    FONTE_TITULO = pygame.font.SysFont("arial", 30, bold=True)
-    FONTE_GAMEOVER = pygame.font.SysFont("arial", 60, bold=True) # Fonte Gigante
-    FONTE_CARTA = pygame.font.SysFont("arial", 20)
-    FONTE_BOTAO = pygame.font.SysFont("arial", 25, bold=True)
+    FONTE_UI = pygame.font.SysFont("fixedsys", 25, bold=True)
+    FONTE_TITULO = pygame.font.SysFont("fixedsys", 40, bold=True)
+    FONTE_GAMEOVER = pygame.font.SysFont("fixedsys", 80, bold=True) # Fonte Gigante
+    FONTE_CARTA = pygame.font.SysFont("fixedsys", 30)
+    FONTE_BOTAO = pygame.font.SysFont("fixedsys", 30, bold=True)
 except:
     FONTE_UI = pygame.font.Font(None, 24)
     FONTE_TITULO = pygame.font.Font(None, 40)
@@ -197,7 +197,7 @@ class Jogo:
         self.estado = "JOGANDO"
 
     def desenhar_ui(self):
-        x = 20; y = ALTURA_TELA - 40
+        x = 20; y = 40
         
         # --- BARRA DE VIDA ---
         bg_rect = pygame.Rect(x, y, BARRA_VIDA_LARGURA, BARRA_VIDA_ALTURA)
@@ -407,7 +407,7 @@ class Jogo:
 
         txt_gameover = FONTE_GAMEOVER.render("GAME OVER", True, (255, 0, 0))
         txt_reiniciar = FONTE_TITULO.render("Pressione 'R' para Reiniciar", True, COR_BRANCA)
-        txt_score = FONTE_BOTAO.render(f"Nível Alcançado: {self.Jogador.nivel}", True, COR_DOURADA)
+        txt_score = FONTE_BOTAO.render(f"MOEDAS COLETADAS: {self.Jogador.moedas}", True, COR_DOURADA)
 
         self.Tela.blit(txt_gameover, (LARGURA_TELA//2 - txt_gameover.get_width()//2, 200))
         self.Tela.blit(txt_score, (LARGURA_TELA//2 - txt_score.get_width()//2, 350))
