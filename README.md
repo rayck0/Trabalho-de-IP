@@ -47,7 +47,7 @@ O projeto foi dividido em módulos para manter o código limpo:
 ### Passo a Passo
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git](https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git)
+    git clone https://github.com/rayck0/Trabalho-de-IP.git
     ```
 2.  **Instale a dependência:**
     ```bash
