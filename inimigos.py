@@ -54,7 +54,7 @@ class InimigoPadrao(pygame.sprite.Sprite):
 
     def update(self):
         # Animação Normal
-        self.index += 0.2
+        self.index += 0.15
         if self.index >= len(self.sprites): self.index = 0
         
         # Pega a imagem original do frame atual
@@ -75,22 +75,22 @@ class InimigoPadrao(pygame.sprite.Sprite):
 # CONFIGURAÇÃO DE VIDA (HP)
 # Player dá 10 de dano por tiro 
 
-class RoboVoador(InimigoPadrao): # Morre em 2 tiros
+class RoboVoador(InimigoPadrao): # Morre em 3 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_voador, 8, 88, 64, 64, velocidade=3.5, vida=20)
+        super().__init__(pos, grupos, sheet_voador, 8, 88, 64, 64, velocidade=3.0, vida=30)
 
-class RoboBola(InimigoPadrao): # Morre em 3 tiros
+class RoboBola(InimigoPadrao): # Morre em 5 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_bola, 4, 64, 64, 64, velocidade=2.5, vida=30)
+        super().__init__(pos, grupos, sheet_bola, 4, 64, 64, 64, velocidade=2.5, vida=50)
 
-class RoboZangao(InimigoPadrao): # Morre em 3 tiros
+class RoboZangao(InimigoPadrao): # Morre em 7 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_zangao, 4, 64, 64, 64, velocidade=3.0, vida=30)
+        super().__init__(pos, grupos, sheet_zangao, 4, 64, 64, 64, velocidade=2.0, vida=70)
 
-class RoboCobra(InimigoPadrao): # Morre em 5 tiros, Tanque
+class RoboCobra(InimigoPadrao): #MINI BOSS: Morre em 18 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_cobra, 5, 64, 64, 64, velocidade=2.0, vida=50)
+        super().__init__(pos, grupos, sheet_cobra, 5, 64, 64, 128, velocidade=1.5, vida=180)
 
 class RoboDragao(InimigoPadrao): # BOSS: Morre em 50 tiros
     def __init__(self, pos, grupos):
-        super().__init__(pos, grupos, sheet_dragao, 6, 256, 256, 190, velocidade=1.5, vida=500)
+        super().__init__(pos, grupos, sheet_dragao, 6, 256, 256, 380, velocidade=1.0, vida=500)

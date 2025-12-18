@@ -18,7 +18,7 @@ class Coletavel(pygame.sprite.Sprite):
         
         # CONFIGURAÇÃO DE TAMANHO
         # Aumenta o tamanho original em 3 vezes (Mude para 2 ou 4 se quiser)
-        ESCALA = 3 
+        ESCALA = 3
         
         if self.tipo == 'vida':
             sheet = img_vida; frames_total = 4

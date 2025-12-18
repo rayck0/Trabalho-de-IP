@@ -154,11 +154,11 @@ class Jogo:
         
         grupos = [self.CameraGroup, self.GrupoInimigos]
         sorteio = random.randint(1, 100)
-        if sorteio <= 40: RoboVoador(pos_final, grupos)
-        elif sorteio <= 70: RoboBola(pos_final, grupos)
-        elif sorteio <= 90: RoboCobra(pos_final, grupos)
-        elif sorteio <= 98: RoboZangao(pos_final, grupos)
-        else: RoboDragao(pos_final, grupos)
+        if sorteio <= 40: RoboVoador(pos_final, grupos) #40%
+        elif sorteio <= 70: RoboBola(pos_final, grupos) #30%
+        elif sorteio <= 90: RoboZangao(pos_final, grupos) #20%
+        elif sorteio <= 98: RoboCobra(pos_final, grupos) #8%
+        else: RoboDragao(pos_final, grupos) #2%
 
     def logica_tiro_automatico(self):
         agora = pygame.time.get_ticks()
@@ -414,6 +414,7 @@ class Jogo:
         self.Tela.blit(txt_reiniciar, (LARGURA_TELA//2 - txt_reiniciar.get_width()//2, 500))
 
     def checar_colisoes(self):
+        #INTERAÇÃO PROJETIL COM OS INIMIGOS
         colisoes = pygame.sprite.groupcollide(self.GrupoInimigos, self.GrupoTiros, False, True)
         for inimigo, balas in colisoes.items():
             dano = len(balas) * self.Jogador.dano_base 
@@ -425,26 +426,27 @@ class Jogo:
                 tipo = random.choice(['xp', 'xp', 'xp', 'ouro', 'vida'])
                 Coletavel(tipo, inimigo.rect.center, [self.CameraGroup, self.GrupoItens])
 
+        #INTERAÇÃO COM OS ITENS
         itens = pygame.sprite.spritecollide(self.Jogador, self.GrupoItens, True)
         for item in itens:
             self.tocar_som("moeda")
-            if item.tipo == 'vida':
-                self.Jogador.vida_atual = min(self.Jogador.vida_atual + 20, self.Jogador.vida_maxima)
+            if item.tipo == 'vida': #ITEM: VIDA
+                self.Jogador.vida_atual = min(self.Jogador.vida_atual + 10, self.Jogador.vida_maxima)
                 if self.config_dano:
-                    TextoDano("+20", self.Jogador.rect.topright, [self.CameraGroup], COR_VERDE_CLARO)
+                    TextoDano("+10", self.Jogador.rect.topright, [self.CameraGroup], COR_VERDE_CLARO)
             
-            elif item.tipo == 'xp':
+            elif item.tipo == 'xp': #ITEM: XP
                 ganhou_xp_valor = 20 
                 if self.Jogador.ganhar_xp(ganhou_xp_valor):
                     self.tocar_som("levelup")
                     self.estado = "LEVEL_UP"
                     self.gerar_opcoes_upgrade()
             
-            elif item.tipo == 'ouro':
+            elif item.tipo == 'ouro': #ITEM: MOEDA
                 self.Jogador.moedas += 1
                 if self.config_dano:
                     TextoDano("+1 $", self.Jogador.rect.topright, [self.CameraGroup], (255, 215, 0))
-
+        #COLISÃO COM INIMIGOS
         if pygame.sprite.spritecollide(self.Jogador, self.GrupoInimigos, False, pygame.sprite.collide_rect_ratio(0.8)):
             if self.Jogador.receber_dano():
                 if self.config_dano:

@@ -85,7 +85,7 @@ class Jogador(pygame.sprite.Sprite):
         # MOVIMENTO
         self.Direcao = pygame.math.Vector2()
         self.PosicaoReal = pygame.math.Vector2(self.rect.center)
-        self.Velocidade = 7 
+        self.Velocidade = 5
 
         # COMBATE & VIDA
         self.vida_maxima = 100
